@@ -17,6 +17,9 @@
 package com.badlogic.gdx.backends.android;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,9 +29,11 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
+import android.os.Build;
 
 import com.badlogic.gdx.Audio;
 import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.AudioDevice;
 import com.badlogic.gdx.audio.AudioRecorder;
 import com.badlogic.gdx.audio.Music;
@@ -46,7 +51,45 @@ public final class AndroidAudio implements Audio {
 
 	public AndroidAudio (Context context, AndroidApplicationConfiguration config) {
 		if (!config.disableAudio) {
-			soundPool = new SoundPool(config.maxSimultaneousSounds, AudioManager.STREAM_MUSIC, 100);
+			if (Build.VERSION.SDK_INT >= 21) {
+				SoundPool soundPoolTemp;
+				try {
+				//Get classes & construct AudioAttributes through Builder
+				Class<?> audioAttributesClass = Class.forName("android.media.AudioAttributes");
+				Class<?> audioBuilderClass = Class.forName("android.media.AudioAttributes$Builder");
+				Object audioBuilder = audioBuilderClass.newInstance();
+				//Invoke methods
+				Method setUsage = audioBuilderClass.getDeclaredMethod("setUsage", int.class);
+				Field usageGame = audioAttributesClass.getDeclaredField("USAGE_GAME");
+				setUsage.invoke(audioBuilder, usageGame.getInt(null));
+				
+				Method setContentType = audioBuilderClass.getDeclaredMethod("setContentType", int.class);
+				Field typeSonification = audioAttributesClass.getDeclaredField("CONTENT_TYPE_SONIFICATION");
+				setContentType.invoke(audioBuilder, typeSonification.getInt(null));
+				
+				Method build = audioBuilderClass.getDeclaredMethod("build");
+				Object attributes = build.invoke(audioBuilder);
+				
+				//Get classes & construct SoundPool through Builder
+				Class<?> soundPoolBuilderClass = Class.forName("android.media.SoundPool$Builder");
+				Object soundPoolBuilder = soundPoolBuilderClass.newInstance();
+				//Invoke methods
+				Method setAudioAttributes = soundPoolBuilderClass.getDeclaredMethod("setAudioAttributes", audioAttributesClass);
+				setAudioAttributes.invoke(attributes);
+				
+				Method setMaxStreams = soundPoolBuilderClass.getDeclaredMethod("setMaxStreams", int.class);
+				setMaxStreams.invoke(config.maxSimultaneousSounds);
+				
+				Method buildSoundPool = soundPoolBuilderClass.getDeclaredMethod("build");
+				soundPoolTemp = (SoundPool)buildSoundPool.invoke(soundPoolBuilder);
+				} catch(Exception e) {
+					e.printStackTrace();
+					soundPoolTemp = new SoundPool(config.maxSimultaneousSounds, AudioManager.STREAM_MUSIC, 100);
+				}
+				soundPool = soundPoolTemp;
+			} else {
+				soundPool = new SoundPool(config.maxSimultaneousSounds, AudioManager.STREAM_MUSIC, 100);
+			}
 			manager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
 			if (context instanceof Activity) {
 				((Activity)context).setVolumeControlStream(AudioManager.STREAM_MUSIC);
