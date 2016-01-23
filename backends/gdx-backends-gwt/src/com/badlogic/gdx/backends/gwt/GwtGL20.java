@@ -25,6 +25,7 @@ import java.nio.ShortBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.utils.GdxRuntimeException;
@@ -457,6 +458,7 @@ public class GwtGL20 implements GL20 {
 	@Override
 	public void glTexImage2D (int target, int level, int internalformat, int width, int height, int border, int format, int type,
 		Buffer pixels) {
+		Gdx.app.log("Heööppo", "Internalformat: " + internalformat +" Format: " + format + " Type: " +type);
 		if (pixels == null) {
 			gl.texImage2D(target, level, internalformat, width, height, border, format, type, null);
 		} else {
@@ -558,24 +560,31 @@ public class GwtGL20 implements GL20 {
 
 	@Override
 	public void glBufferData (int target, int size, Buffer data, int usage) {
-		if (data instanceof FloatBuffer) {
-			gl.bufferData(target, copy((FloatBuffer)data), usage);
-		} else if (data instanceof ShortBuffer) {
-			gl.bufferData(target, copy((ShortBuffer)data), usage);
+// if (data instanceof FloatBuffer) {
+// gl.bufferData(target, copy((FloatBuffer)data), usage);
+// } else if (data instanceof ShortBuffer) {
+// gl.bufferData(target, copy((ShortBuffer)data), usage);
+// } else {
+// throw new GdxRuntimeException("Can only cope with FloatBuffer and ShortBuffer at the moment");
+// }
+		if (data == null) {
+			gl.bufferData(target, size, usage);
 		} else {
-			throw new GdxRuntimeException("Can only cope with FloatBuffer and ShortBuffer at the moment");
+			gl.bufferData(target, ((HasArrayBufferView)data).getTypedArray(), usage);
 		}
+
 	}
 
 	@Override
 	public void glBufferSubData (int target, int offset, int size, Buffer data) {
-		if (data instanceof FloatBuffer) {
-			gl.bufferSubData(target, offset, copy((FloatBuffer)data));
-		} else if (data instanceof ShortBuffer) {
-			gl.bufferSubData(target, offset, copy((ShortBuffer)data));
-		} else {
-			throw new GdxRuntimeException("Can only cope with FloatBuffer and ShortBuffer at the moment");
-		}
+//		if (data instanceof FloatBuffer) {
+//			gl.bufferSubData(target, offset, copy((FloatBuffer)data));
+//		} else if (data instanceof ShortBuffer) {
+//			gl.bufferSubData(target, offset, copy((ShortBuffer)data));
+//		} else {
+//			throw new GdxRuntimeException("Can only cope with FloatBuffer and ShortBuffer at the moment");
+//		}
+		gl.bufferSubData(target, offset, ((HasArrayBufferView)data).getTypedArray());
 	}
 
 	@Override

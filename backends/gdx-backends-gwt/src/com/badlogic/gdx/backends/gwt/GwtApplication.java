@@ -174,6 +174,7 @@ public abstract class GwtApplication implements EntryPoint, Application {
 		Gdx.graphics = graphics;
 		Gdx.gl20 = graphics.getGL20();
 		Gdx.gl = Gdx.gl20;
+		Gdx.gl30 = graphics.getGL30();
 		Gdx.files = new GwtFiles(preloader);
 		this.input = new GwtInput(graphics.canvas);
 		Gdx.input = this.input;
@@ -188,7 +189,8 @@ public abstract class GwtApplication implements EntryPoint, Application {
 		} catch (Throwable t) {
 			error("GwtApplication", "exception: " + t.getMessage(), t);
 			t.printStackTrace();
-			throw new RuntimeException(t);
+			throw t;
+			//throw new RuntimeException(t);
 		}
 
 		AnimationScheduler.get().requestAnimationFrame(new AnimationCallback() {
@@ -198,7 +200,8 @@ public abstract class GwtApplication implements EntryPoint, Application {
 					mainLoop();
 				} catch (Throwable t) {
 					error("GwtApplication", "exception: " + t.getMessage(), t);
-					throw new RuntimeException(t);
+					throw t;
+					//throw new RuntimeException(t);
 				}
 				AnimationScheduler.get().requestAnimationFrame(this, graphics.canvas);
 			}

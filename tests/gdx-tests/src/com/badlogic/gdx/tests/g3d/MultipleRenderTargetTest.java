@@ -62,10 +62,10 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-/** MRT test compliant with GLES 3.0, with per pixel lighting and normal and specular mapping.
- * Thanks to http://www.blendswap.com/blends/view/73922 for the cannon model, licensed under CC-BY-SA
+/** MRT test compliant with GLES 3.0, with per pixel lighting and normal and specular mapping. Thanks to
+ * http://www.blendswap.com/blends/view/73922 for the cannon model, licensed under CC-BY-SA
  *
- /** @author Tomski */
+ * /** @author Tomski */
 public class MultipleRenderTargetTest extends GdxTest {
 
 	RenderContext renderContext;
@@ -94,20 +94,21 @@ public class MultipleRenderTargetTest extends GdxTest {
 	static int POSITION_ATTACHMENT = 2;
 	static int DEPTH_ATTACHMENT = 3;
 
-
 	final int NUM_LIGHTS = 10;
 
 	@Override
 	public void create () {
-		//use default prepend shader code for batch, some gpu drivers are less forgiving
+		// use default prepend shader code for batch, some gpu drivers are less forgiving
 		batch = new SpriteBatch();
 
-		ShaderProgram.pedantic = false;//depth texture not currently sampled
+		ShaderProgram.pedantic = false;// depth texture not currently sampled
 
 		modelCache = new ModelCache();
 
-		ShaderProgram.prependVertexCode = Gdx.app.getType().equals(Application.ApplicationType.Desktop) ? "#version 140\n #extension GL_ARB_explicit_attrib_location : enable\n" : "#version 300 es\n";
-		ShaderProgram.prependFragmentCode = Gdx.app.getType().equals(Application.ApplicationType.Desktop) ? "#version 140\n #extension GL_ARB_explicit_attrib_location : enable\n" : "#version 300 es\n";
+		ShaderProgram.prependVertexCode = Gdx.app.getType().equals(Application.ApplicationType.Desktop) ? "#version 140\n #extension GL_ARB_explicit_attrib_location : enable\n"
+			: "#version 300 es\n";
+		ShaderProgram.prependFragmentCode = Gdx.app.getType().equals(Application.ApplicationType.Desktop) ? "#version 140\n #extension GL_ARB_explicit_attrib_location : enable\n"
+			: "#version 300 es\n";
 
 		renderContext = new RenderContext(new DefaultTextureBinder(DefaultTextureBinder.ROUNDROBIN));
 		shaderProvider = new BaseShaderProvider() {
@@ -166,7 +167,8 @@ public class MultipleRenderTargetTest extends GdxTest {
 			light.vx = MathUtils.random(-10f, 10f);
 			light.vz = MathUtils.random(-10f, 10f);
 
-			MeshPartBuilder meshPartBuilder = modelBuilder.part("light", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal, new Material());
+			MeshPartBuilder meshPartBuilder = modelBuilder.part("light", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
+				| VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal, new Material());
 			meshPartBuilder.setColor(light.color.x, light.color.y, light.color.z, 1f);
 			meshPartBuilder.sphere(0.2f, 0.2f, 0.2f, 10, 10);
 
@@ -175,7 +177,8 @@ public class MultipleRenderTargetTest extends GdxTest {
 		}
 
 		modelBuilder.begin();
-		MeshPartBuilder meshPartBuilder = modelBuilder.part("floor", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal, new Material());
+		MeshPartBuilder meshPartBuilder = modelBuilder.part("floor", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
+			| VertexAttributes.Usage.ColorPacked | VertexAttributes.Usage.Normal, new Material());
 		meshPartBuilder.setColor(0.2f, 0.2f, 0.2f, 1f);
 		meshPartBuilder.box(0, -0.1f, 0f, 20f, 0.1f, 20f);
 		floorInstance = new ModelInstance(modelBuilder.end());
@@ -250,7 +253,8 @@ public class MultipleRenderTargetTest extends GdxTest {
 			renderContext.textureBinder.bind(frameBuffer.getColorBufferTexture(NORMAL_ATTACHMENT)));
 		mrtSceneShader.setUniformi("u_positionTexture",
 			renderContext.textureBinder.bind(frameBuffer.getColorBufferTexture(POSITION_ATTACHMENT)));
-		mrtSceneShader.setUniformi("u_depthTexture", renderContext.textureBinder.bind(frameBuffer.getColorBufferTexture(DEPTH_ATTACHMENT)));
+		mrtSceneShader.setUniformi("u_depthTexture",
+			renderContext.textureBinder.bind(frameBuffer.getColorBufferTexture(DEPTH_ATTACHMENT)));
 		for (int i = 0; i < lights.size; i++) {
 			Light light = lights.get(i);
 			mrtSceneShader.setUniformf("lights[" + i + "].lightPosition", light.position);
@@ -260,7 +264,6 @@ public class MultipleRenderTargetTest extends GdxTest {
 		quad.render(mrtSceneShader, GL30.GL_TRIANGLE_FAN);
 		mrtSceneShader.end();
 		renderContext.end();
-
 
 		batch.disableBlending();
 		batch.begin();
@@ -317,8 +320,7 @@ public class MultipleRenderTargetTest extends GdxTest {
 		verts[i++] = 0f;
 		verts[i++] = 1f;
 
-		Mesh mesh = new Mesh(true, 4, 0,
-			new VertexAttribute(VertexAttributes.Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE),
+		Mesh mesh = new Mesh(true, 4, 0, new VertexAttribute(VertexAttributes.Usage.Position, 3, ShaderProgram.POSITION_ATTRIBUTE),
 			new VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
 
 		mesh.setVertices(verts);
@@ -398,9 +400,9 @@ public class MultipleRenderTargetTest extends GdxTest {
 
 		@Override
 		public int compareTo (Shader other) {
-			//quick and dirty shader sort
-			if (((MRTShader) other).attributes == attributes) return 0;
-			if ((((MRTShader) other).attributes & TextureAttribute.Normal) == 1) return -1;
+			// quick and dirty shader sort
+			if (((MRTShader)other).attributes == attributes) return 0;
+			if ((((MRTShader)other).attributes & TextureAttribute.Normal) == 1) return -1;
 			return 1;
 
 		}
@@ -513,8 +515,7 @@ public class MultipleRenderTargetTest extends GdxTest {
 			if (!defaultFramebufferHandleInitialized) {
 				defaultFramebufferHandleInitialized = true;
 				if (Gdx.app.getType() == Application.ApplicationType.iOS) {
-					IntBuffer intbuf = ByteBuffer.allocateDirect(16 * Integer.SIZE / 8).order(ByteOrder.nativeOrder())
-						.asIntBuffer();
+					IntBuffer intbuf = ByteBuffer.allocateDirect(16 * Integer.SIZE / 8).order(ByteOrder.nativeOrder()).asIntBuffer();
 					gl.glGetIntegerv(GL20.GL_FRAMEBUFFER_BINDING, intbuf);
 					defaultFramebufferHandle = intbuf.get(0);
 				} else {
@@ -527,13 +528,13 @@ public class MultipleRenderTargetTest extends GdxTest {
 			framebufferHandle = gl.glGenFramebuffer();
 			gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
 
-			//rgba
+			// rgba
 			Texture diffuse = createColorTexture(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, GL30.GL_RGBA,
 				GL30.GL_RGBA, GL30.GL_UNSIGNED_BYTE);
-			//rgb
+			// rgb
 			Texture normal = createColorTexture(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, GL30.GL_RGB16F,
 				GL30.GL_RGB, GL30.GL_FLOAT);
-			//rgb
+			// rgb
 			Texture position = createColorTexture(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest, GL30.GL_RGB16F,
 				GL30.GL_RGB, GL30.GL_FLOAT);
 			Texture depth = createDepthTexture();
@@ -557,6 +558,8 @@ public class MultipleRenderTargetTest extends GdxTest {
 			buffer.put(GL30.GL_COLOR_ATTACHMENT1);
 			buffer.put(GL30.GL_COLOR_ATTACHMENT2);
 			buffer.position(0);
+			boolean b = Gdx.gl30 == null;
+			Gdx.app.log("sdfsdf", "ssdfsdfsdf" + b);
 			Gdx.gl30.glDrawBuffers(3, buffer);
 
 			gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);
@@ -595,8 +598,7 @@ public class MultipleRenderTargetTest extends GdxTest {
 
 			gl.glDeleteFramebuffer(framebufferHandle);
 
-			if (buffers.get(Gdx.app) != null)
-				buffers.get(Gdx.app).removeValue(this, true);
+			if (buffers.get(Gdx.app) != null) buffers.get(Gdx.app).removeValue(this, true);
 		}
 
 		/** Makes the frame buffer current so everything gets drawn to it. */
@@ -657,8 +659,7 @@ public class MultipleRenderTargetTest extends GdxTest {
 
 		private static void addManagedFrameBuffer (Application app, MRTFrameBuffer frameBuffer) {
 			Array<MRTFrameBuffer> managedResources = buffers.get(app);
-			if (managedResources == null)
-				managedResources = new Array<MRTFrameBuffer>();
+			if (managedResources == null) managedResources = new Array<MRTFrameBuffer>();
 			managedResources.add(frameBuffer);
 			buffers.put(app, managedResources);
 		}

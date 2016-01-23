@@ -39,8 +39,12 @@ public class GwtApplicationConfiguration {
 	public TextArea log;
 	/** whether to use debugging mode for OpenGL calls. Errors will result in a RuntimeException being thrown. */
 	public boolean useDebugGL = false;
+	/** Experimental, whether to enable OpenGL ES 30 (aka WebGL2) if supported. If not supported it will fall-back to OpenGL ES 2.0.
+	 * When GL ES 30 is enabled, {@link com.badlogic.gdx.Gdx#gl30} can be used to access its functionality.
+	 * @deprecated this option is currently experimental and not yet fully supported, expect issues. */
+	@Deprecated public boolean useGL30 = false;
 	/** whether SoundManager2 should prefer to use flash instead of html5 audio (it should fall back if not available) */
-	public boolean preferFlash = true;
+	public boolean preferFlash = false;
 	/** preserve the back buffer, needed if you fetch a screenshot via canvas#toDataUrl, may have performance impact **/
 	public boolean preserveDrawingBuffer = false;
 	/** whether to include an alpha channel in the color buffer to combine the color buffer with the rest of the webpage

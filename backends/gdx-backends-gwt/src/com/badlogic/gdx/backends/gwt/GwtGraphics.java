@@ -28,6 +28,7 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.webgl.client.WebGL2RenderingContext;
 import com.google.gwt.webgl.client.WebGLContextAttributes;
 import com.google.gwt.webgl.client.WebGLRenderingContext;
 
@@ -51,7 +52,8 @@ public class GwtGraphics implements Graphics {
 
 	CanvasElement canvas;
 	WebGLRenderingContext context;
-	GL20 gl;
+	GL20 gl20;
+	GL30 gl30;
 	String extensions;
 	float fps = 0;
 	long lastTimeStamp = System.currentTimeMillis();
@@ -77,9 +79,15 @@ public class GwtGraphics implements Graphics {
 		attributes.setPremultipliedAlpha(config.premultipliedAlpha);
 		attributes.setPreserveDrawingBuffer(config.preserveDrawingBuffer);
 
-		context = WebGLRenderingContext.getContext(canvas, attributes);
+		if(config.useGL30){
+			context = WebGL2RenderingContext.getContext(canvas, attributes);
+			this.gl30 = new GwtGL30((WebGL2RenderingContext)context);
+			this.gl20 = gl30;
+		} else {
+			context = WebGLRenderingContext.getContext(canvas, attributes);
+			this.gl20 = config.useDebugGL ? new GwtGL20Debug(context) : new GwtGL20(context);
+		}
 		context.viewport(0, 0, config.width, config.height);
-		this.gl = config.useDebugGL ? new GwtGL20Debug(context) : new GwtGL20(context);
 	}
 
 	public WebGLRenderingContext getContext () {
@@ -88,7 +96,7 @@ public class GwtGraphics implements Graphics {
 
 	@Override
 	public GL20 getGL20 () {
-		return gl;
+		return gl20;
 	}
 
 	@Override
@@ -451,12 +459,12 @@ public class GwtGraphics implements Graphics {
 
 	@Override
 	public boolean isGL30Available () {
-		return false;
+		return gl30 != null;
 	}
 
 	@Override
 	public GL30 getGL30 () {
-		return null;
+		return gl30;
 	}
 
 	@Override

@@ -105,6 +105,7 @@ import com.badlogic.gdx.tests.UITest;
 import com.badlogic.gdx.tests.VertexBufferObjectShaderTest;
 import com.badlogic.gdx.tests.YDownTest;
 import com.badlogic.gdx.tests.g3d.ModelCacheTest;
+import com.badlogic.gdx.tests.g3d.MultipleRenderTargetTest;
 import com.badlogic.gdx.tests.g3d.ShadowMappingTest;
 import com.badlogic.gdx.tests.superkoalio.SuperKoalio;
 import com.badlogic.gdx.tests.utils.GdxTest;
@@ -605,6 +606,10 @@ public class GwtTestWrapper extends GdxTest {
 		new Instancer() {
 			public GdxTest instance () {
 				return new MeshShaderTest();
+			}
+		}, new Instancer() {
+			public GdxTest instance () {
+				return new MultipleRenderTargetTest();
 			}
 		}, new Instancer() {
 			public GdxTest instance () {
