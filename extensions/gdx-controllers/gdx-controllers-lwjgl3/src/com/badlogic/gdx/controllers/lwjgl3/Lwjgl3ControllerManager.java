@@ -1,6 +1,7 @@
 package com.badlogic.gdx.controllers.lwjgl3;
 
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWJoystickCallbackI;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
@@ -19,7 +20,17 @@ public class Lwjgl3ControllerManager implements ControllerManager {
 				controllers.add(new Lwjgl3Controller(this, i));
 			}
 		}
-		
+		GLFW.glfwSetJoystickCallback(new GLFWJoystickCallbackI() {
+
+			@Override
+			public void invoke (int joy, int event) {
+				if (event == GLFW.GLFW_CONNECTED) {
+					connected(new Lwjgl3Controller(Lwjgl3ControllerManager.this, joy));
+				} else if (event == GLFW.GLFW_DISCONNECTED) {
+					disconnected(new Lwjgl3Controller(Lwjgl3ControllerManager.this, joy));
+				}
+			}
+		});
 		Gdx.app.postRunnable(new Runnable() {
 			@Override
 			public void run () {
@@ -30,22 +41,6 @@ public class Lwjgl3ControllerManager implements ControllerManager {
 	}
 	
 	void pollState() {
-		for(int i = GLFW.GLFW_JOYSTICK_1; i < GLFW.GLFW_JOYSTICK_LAST; i++) {
-			if(GLFW.glfwJoystickPresent(i)) {
-				boolean alreadyUsed = false;
-				for(int j = 0; j < controllers.size; j++) {
-					if(((Lwjgl3Controller)controllers.get(j)).index == i) {
-						alreadyUsed = true;
-						break;
-					}
-				}
-				if(!alreadyUsed) {
-					Lwjgl3Controller controller = new Lwjgl3Controller(this, i);
-					connected(controller);
-				}
-			}
-		}
-		
 		polledControllers.addAll(controllers);
 		for(Controller controller: polledControllers) {
 			((Lwjgl3Controller)controller).pollState();

@@ -207,6 +207,8 @@ project(":extensions:gdx-controllers:gdx-controllers-desktop") {
 }
 
 project(":extensions:gdx-controllers:gdx-controllers-lwjgl3") {
+	sourceCompatibility = 1.8
+    targetCompatibility = 1.8
     dependencies {
         compile project(":gdx");
         compile project(":extensions:gdx-controllers:gdx-controllers");
