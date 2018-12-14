@@ -5,7 +5,7 @@ LOCAL_MODULE    := gdx-box2d
 LOCAL_C_INCLUDES := 
  
 LOCAL_CFLAGS := $(LOCAL_C_INCLUDES:%=-I%) -O2 -Wall -D__ANDROID__
-LOCAL_CPPFLAGS := $(LOCAL_C_INCLUDES:%=-I%) -O2 -Wall -D__ANDROID__
+LOCAL_CPPFLAGS := $(LOCAL_C_INCLUDES:%=-I%) -O2 -Wall -D__ANDROID__ -Werror=return-type
 LOCAL_LDLIBS := -lm
 LOCAL_ARM_MODE  := arm
  
